@@ -1,128 +1,129 @@
-// eslint-disable-next-line no-unused-vars
-import React, { useState } from 'react';
-import axios from 'axios';
-import { TextField, Button, Typography, Container, Paper } from '@mui/material';
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { useNavigate } from 'react-router-dom';
+/* eslint-disable react/no-unescaped-entities */
+/* eslint-disable no-unused-vars */
+
+import React, { useState } from "react";
+import axios from "axios";
+import {
+  AppBar,
+  Toolbar,
+  TextField,
+  Button,
+  Typography,
+  Container,
+  Paper,
+  Link,
+} from "@mui/material";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  // const [message, setMessage] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5000/login', {
+      const response = await axios.post("http://localhost:5000/login", {
         username,
         password,
       });
+      const { token } = response.data;
 
-      console.log('Login response:', response);
-
-      console.log('Username from response:', response.data);
-
-      // const cleanedData = response.data.trim();
-      // const responseData = JSON.parse(cleanedData);
-      // console.log('Parsed response data:', responseData);
- 
-       // Store the username in local storage
-      //  localStorage.setItem('username', responseData.username);
-
-      // Store the username in local storage or cookies
-      localStorage.setItem('username', response.data.username);
+      localStorage.setItem("authToken", token);
+      localStorage.setItem("username", username);
+      localStorage.setItem("isAuthenticated", true);
 
       toast.success(response.data.message, {
         position: "top-right",
         autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "dark",
-        });
-        setTimeout(() => {
-          navigate('/dashboard'); // Make sure the path matches your routing setup
-        }, 1500);
-      // setMessage(response.data.message);
+      });
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 1500);
     } catch (error) {
-      if (error.response && error.response.data) {
-        toast.error(error.response.data.message, {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "dark",
-          });
-        // setMessage(error.response.data.message);
-      } else {
-        // setMessage('Error logging in');
-        toast.error('An error occurred. Please try again.', {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "dark",
-          });
-      }
+      const message =
+        error.response?.data?.message || "An error occurred. Please try again.";
+      toast.error(message, {
+        position: "top-right",
+        autoClose: 3000,
+      });
     }
   };
 
   return (
     <>
-    <ToastContainer
-    position="top-right"
-    autoClose={3000}
-    hideProgressBar={false}
-    newestOnTop
-    closeOnClick
-    rtl={false}
-    pauseOnFocusLoss
-    draggable
-    pauseOnHover
-    theme="dark"
-    />
-    <Container component="main" maxWidth="xs">
-      <Paper elevation={3} className="p-5">
-        <Typography variant="h5" component="h1" gutterBottom>
-          Login
-        </Typography>
-        <form onSubmit={handleLogin}>
-          <TextField
-            label="Username"
-            variant="outlined"
-            fullWidth
-            margin="normal"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-          />
-          <TextField
-            label="Password"
-            type="password"
-            variant="outlined"
-            fullWidth
-            margin="normal"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-          <Button type="submit" variant="contained" color="primary" fullWidth>
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
+      <AppBar position="static" style={{ backgroundColor: "#254441" }}>
+        <Toolbar>
+          <Typography variant="h6" style={{ flexGrow: 1, color: "wheat" }}>
+            DealsDray Employee Management System
+          </Typography>
+        </Toolbar>
+      </AppBar>
+      <Container
+        component="main"
+        maxWidth="xs"
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "100vh",
+        }}
+      >
+        <Paper elevation={3} sx={{ padding: 4, borderRadius: 2 }}>
+          <Typography variant="h5" component="h1" gutterBottom align="center">
             Login
-          </Button>
-        </form>
-        {/* {message && <Typography color="error">{message}</Typography>} */}
-      </Paper>
-    </Container>
+          </Typography>
+          <form onSubmit={handleLogin}>
+            <TextField
+              label="Username"
+              variant="outlined"
+              fullWidth
+              margin="normal"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+            />
+            <TextField
+              label="Password"
+              type="password"
+              variant="outlined"
+              fullWidth
+              margin="normal"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              fullWidth
+              sx={{ marginTop: 2 }}
+            >
+              Login
+            </Button>
+          </form>
+          <Typography variant="body2" align="center" sx={{ marginTop: 2 }}>
+            Don't have an account?{" "}
+            <Link href="/register" variant="body2">
+              Register
+            </Link>
+          </Typography>
+        </Paper>
+      </Container>
     </>
   );
 };
